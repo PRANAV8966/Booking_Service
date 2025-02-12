@@ -2,8 +2,9 @@ const { StatusCodes } = require('http-status-codes');
 
 class ValidationErr extends Error {
     constructor(error) {
+        super();
         let explanation = [];
-        error.errors.forEach(err => {
+        error.errors.forEach((err) => {
             explanation.push(err.message);
         });
 

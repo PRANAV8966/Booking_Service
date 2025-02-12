@@ -3,7 +3,7 @@ const router = express.Router();
 
 const v1Routes = require('./V1/index')
 
-router.get('/v1', v1Routes);
+router.use('/v1', v1Routes);
 
 
 module.exports = router;

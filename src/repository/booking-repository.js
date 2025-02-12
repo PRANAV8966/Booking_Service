@@ -13,10 +13,23 @@ class BookingRepository {
                 throw new ValidationErr();
             }
             throw new ServerErr(
-                'Internal server error',
+                'Repository Error',
                 'not able to create the booking',
                 'Some issue found while creating the booking'
             )
+        }
+    }
+
+    async updateBooking(bookingId, data) {
+        try {
+            const booking = await Booking.findByPk(bookingId);
+            if(data.status) {
+                booking.status = data.status;
+            }
+            await booking.save();
+            return booking;
+        } catch (error) {
+            throw {error};
         }
     }
 }
