@@ -1,4 +1,5 @@
 
+const { where } = require('sequelize');
 const { Booking } = require('../models/index');
 const { ValidationErr, ServerErr} = require('../utils/Error/index');
 
@@ -30,6 +31,30 @@ class BookingRepository {
             return booking;
         } catch (error) {
             throw {error};
+        }
+    }
+
+    async findBooking(bookingId) {
+        try {
+            const bookingdetails = await Booking.findByPk(bookingId);
+            console.log(bookingdetails);
+            return bookingdetails;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    async deleteBooking(bookingId) {
+        try {
+            await Booking.destroy({
+                where: {
+                    id:bookingId
+                }
+            });
+            return true;
+        } catch (error) {
+            throw error;
         }
     }
 }

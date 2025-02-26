@@ -5,6 +5,7 @@ const bodyParser  = require('body-parser');
 const apiRoutes = require('./src/routes/index');
 
 const {PORT} = require("./src/config/configServer");
+const morgan = require('morgan');
 
 
 const SetupAndStartServer = async () => {
@@ -14,6 +15,8 @@ const SetupAndStartServer = async () => {
 
 
     app.use('/api', apiRoutes);
+
+    app.use(morgan('combined'));
 
     app.listen(PORT, ()=> {
         console.log(`Server started on ${PORT}`);
