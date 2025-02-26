@@ -14,17 +14,22 @@ class BookingController {
         this.deleteBooking = this.deleteBooking.bind(this);
     }
 
-    async #sendMessageToQueue(message) {
+    async #sendMessageToQueue(bookingDetails) {
         try {
+            const publishPayload = {
+                id: bookingDetails.id,
+                flightId: bookingDetails.flightId,
+                userId: bookingDetails.userId,
+                status: bookingDetails.status,
+                NoOfSeats: bookingDetails.NoOfSeats,
+                totalCost: bookingDetails.totalCost
+            }
             const channel = await createChannel();
-            await publishMessage(channel, REMINDER_BINDING_KEY, JSON.stringify(message));
-            return res.status(200).json({
-                message:'successfully published the message',
-                error:{}
-            });
+            await publishMessage(channel, REMINDER_BINDING_KEY, JSON.stringify(publishPayload));
+            console.log('sucessfully published the message');
             
         } catch (error) {
-            console.log('something went wrong while queueing messages');
+            console.log('something went wrong while queueing messages', error);
             throw error;
         }
     }
@@ -32,6 +37,9 @@ class BookingController {
     async createBooking(req, res) {
         try {
             const flight = await this.bookingService.createBooking(req.body);
+            if (flight) {
+                this.#sendMessageToQueue(flight);
+            }
             return res.status(200).json({
                 data:flight,
                 message:'successsfully fetched the flights',

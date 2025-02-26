@@ -1,5 +1,4 @@
 
-const { where } = require('sequelize');
 const { Booking } = require('../models/index');
 const { ValidationErr, ServerErr} = require('../utils/Error/index');
 
