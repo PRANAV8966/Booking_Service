@@ -1,9 +1,10 @@
 const BookingService = require('../Services/booking-service');
-
+const axios = require('axios');
 const { createChannel, publishMessage } = require('../utils/messageQueue');
 const { REMINDER_BINDING_KEY } = require("../config/configServer");
 
 const { StatusCodes } = require('http-status-codes');
+const { USER_PATH_URL } = require('../config/configServer');
 
 
 class BookingController {
@@ -14,12 +15,23 @@ class BookingController {
         this.deleteBooking = this.deleteBooking.bind(this);
     }
 
+    async getUserDetails(userId) {
+        try {
+            const user = await axios.get(`${USER_PATH_URL}/api/v1/user/${userId}`);
+            return user.data.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async #sendMessageToQueue(bookingDetails) {
         try {
+            const User = await this.getUserDetails(bookingDetails.userId);
             const publishPayload = {
                 id: bookingDetails.id,
                 flightId: bookingDetails.flightId,
                 userId: bookingDetails.userId,
+                email:User.email,
                 status: bookingDetails.status,
                 NoOfSeats: bookingDetails.NoOfSeats,
                 totalCost: bookingDetails.totalCost
@@ -47,7 +59,6 @@ class BookingController {
                 success : true
             });
         } catch (error) {
-            console.log(error);
             return res.status(500).json({
                 data:{},
                 message:'failed to fetch flights',
